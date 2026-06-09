@@ -1,0 +1,39 @@
+max_iterations: 25
+checkpoint_interval: 5
+
+llm:
+  primary_model: "claude-sonnet-4-6"
+  primary_model_weight: 0.8
+  secondary_model: "claude-haiku-4-5-20251001"
+  secondary_model_weight: 0.2
+  api_base: "https://api.anthropic.com/v1"
+  temperature: 0.7
+  max_tokens: 8000
+  timeout: 180
+
+prompt:
+  system_message: >
+    You are an expert CUDA/Triton kernel engineer. Your task is to optimize a Triton
+    GPU kernel that performs float16 vector addition: C = A + B where A, B, C are
+    float16 tensors of shape (N, N). The kernel runs on an NVIDIA H100. Optimize for
+    minimum geometric mean latency across matrix sizes N=1024,2048,4096,8192.
+    Focus on: memory access patterns (coalescing, vectorized loads/stores), BLOCK_SIZE
+    tuning, exploiting H100 memory bandwidth (3.35 TB/s on SXM5), and reducing
+    overhead. The function signature must remain: custom_kernel(data) where
+    data = (a_tensor, b_tensor), both float16.
+
+database:
+  population_size: 20
+  archive_size: 10
+  num_islands: 2
+  elite_selection_ratio: 0.2
+  exploitation_ratio: 0.7
+
+evaluator:
+  timeout: 450
+  cascade_thresholds: [0.5]
+  parallel_evaluations: 1
+
+cascade_evaluation: false
+diff_based_evolution: true
+max_code_length: 10000
